@@ -80,6 +80,61 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
+            slider_key.Value = 100;
+            updatergb();
+        }
+
+        private void show_color()
+        {
+            int red = int.Parse(label_red.Content.ToString());
+            int green = int.Parse(label_green.Content.ToString());
+            int blue = int.Parse(label_blue.Content.ToString());
+
+            curr_color.Background = new SolidColorBrush(Color.FromRgb((byte)red, (byte)green, (byte)blue));
+        }
+
+        public void updatecmyk()
+        {
+            double rc = double.Parse(label_red.Content.ToString()) / 255;
+            double gc = double.Parse(label_green.Content.ToString()) / 255;
+            double bc = double.Parse(label_blue.Content.ToString()) / 255;
+
+            double max = rc;
+            if (gc > max) max = gc;
+            if (bc > max) max = bc;
+
+            double k = 1 - max;
+
+            double c = (1 - rc - k) / (1 - k) * 100;
+            double m = (1 - gc - k) / (1 - k) * 100;
+            double y = (1 - bc - k) / (1 - k) * 100;
+
+
+            slider_cyan.Value = (int)c;
+            slider_magenta.Value = (int)m;
+            slider_yellow.Value = (int)y;
+            slider_key.Value = (int)(k * 100);
+
+            updatergb();
+
+        }
+
+        public void updatergb()
+        {
+            double cyan = double.Parse(label_cyan.Content.ToString());
+            double magenta = double.Parse(label_magenta.Content.ToString());
+            double yellow = double.Parse(label_yellow.Content.ToString());
+            double key = double.Parse(label_key.Content.ToString());
+
+            double red = 255 * (1 - cyan / 100) * (1 - (key / 100));
+            double green = 255 * (1 - magenta / 100) * (1 - key / 100);
+            double blue = 255 * (1 - yellow / 100) * (1 - key / 100);
+
+            slider_red.Value = (int)red;
+            slider_green.Value = (int)green;
+            slider_blue.Value = (int)blue;
+
+            curr_color.Background = new SolidColorBrush(Color.FromRgb((byte)red, (byte)green, (byte)blue));
         }
 
         private bool MouseIsOverLine(Point mouse_pt, out Line hit_line)
@@ -265,14 +320,16 @@ namespace WpfApp1
             paintSurface.MouseMove -= Canvas_MouseUp_MovingSegment;
             paintSurface.MouseUp -= Canvas_MouseMove_MovingSegment;
 
-            Point location = e.GetPosition(this);
-            if((location.X>=0) && (location.X < TrashWidth) && (location.Y >= 0) && (location.Y < TrashHeight))
-            {
-                if(System.Windows.MessageBox.Show("Delete this segment?", "Delete Segment?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                {
-                    paintSurface.Children.Remove(SelectedLine);
-                }
-            }
+            //paintSurface.Children.Add(SelectedLine);
+
+            //Point location = e.GetPosition(this);
+            //if((location.X>=0) && (location.X < TrashWidth) && (location.Y >= 0) && (location.Y < TrashHeight))
+            //{
+            //    if(System.Windows.MessageBox.Show("Delete this segment?", "Delete Segment?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            //    {
+            //        paintSurface.Children.Remove(SelectedLine);
+            //    }
+            //}
         }
 
         private void Canvas_MouseMove_1(object sender, MouseEventArgs e)
@@ -331,6 +388,53 @@ namespace WpfApp1
             {
                 selectedColor = ColorPicker1.SelectedColor.Value;
             }
+        }
+
+        private void slider_cyan_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            label_cyan.Content = slider_cyan.Value;
+            updatergb();
+        }
+
+        private void slider_magenta_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            label_magenta.Content = slider_magenta.Value;
+            updatergb();
+        }
+
+        private void slider_yellow_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            label_yellow.Content = slider_yellow.Value;
+            updatergb();
+        }
+
+        private void slider_key_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            label_key.Content = slider_key.Value;
+            updatergb();
+        }
+
+        private void slider_red_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            label_red.Content = slider_red.Value;
+            show_color();
+        }
+
+        private void slider_green_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            label_green.Content = slider_green.Value;
+            show_color();
+        }
+
+        private void slider_blue_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            label_blue.Content = slider_blue.Value;
+            show_color();
+        }
+
+        private void button_to_CMYK_Click(object sender, RoutedEventArgs e)
+        {
+            updatecmyk();
         }
     }
 }

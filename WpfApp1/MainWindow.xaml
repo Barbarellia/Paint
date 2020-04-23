@@ -8,6 +8,10 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         <Canvas Name="paintSurface" MouseDown="Canvas_MouseDown_1" MouseMove="Canvas_MouseMove_1">
             <Canvas.Background>
                 <SolidColorBrush Color="White" Opacity="0" />
@@ -20,5 +24,46 @@
             <wpfx:ColorPicker x:Name="ColorPicker1" DisplayColorAndName="True"  SelectedColorChanged="ColorPicker1_SelectedColorChanged"
                    RenderTransformOrigin="-0.271,0.505" AvailableColorsSortingMode="HueSaturationBrightness" Height="22" Width="83" />
         </WrapPanel>
+        <WrapPanel Grid.Row="2">
+            <StackPanel Grid.Row="2">
+                <Label Width="68" Height="28" Canvas.Top="306" Content="Cyan"/>
+                <Label Width="68" Content="Magenta" Height="28" Canvas.Top="334"/>
+                <Label Width="68" Content="Yellow" Height="28" Canvas.Top="362"/>
+                <Label Width="68" Content="Key (black)" Height="28" Canvas.Top="390"/>
+
+            </StackPanel>
+            <StackPanel Grid.Row="3">
+                <Slider Name="slider_cyan" Height="20" VerticalAlignment="Top" Width="100" Maximum="100" SmallChange="1" ValueChanged="slider_cyan_ValueChanged" IsSnapToTickEnabled="True" />
+                <Slider Name="slider_magenta" Height="20" VerticalAlignment="Top" Width="100" Maximum="100" SmallChange="1" ValueChanged="slider_magenta_ValueChanged" IsSnapToTickEnabled="True"/>
+                <Slider Name="slider_yellow" Height="20" VerticalAlignment="Top" Width="100" Canvas.Left="73" Canvas.Top="362" Maximum="100" SmallChange="1" ValueChanged="slider_yellow_ValueChanged" IsSnapToTickEnabled="True"/>
+                <Slider Name="slider_key" Height="20" VerticalAlignment="Top" Width="100" Canvas.Left="73" Canvas.Top="390" Maximum="100" SmallChange="1" ValueChanged="slider_key_ValueChanged" IsSnapToTickEnabled="True"/>
+            </StackPanel>
+            <StackPanel Grid.Row="4">
+                <Label Name="label_cyan" Width="68" Height="28" Canvas.Top="306" Content="0" Canvas.Left="172"/>
+                <Label Name="label_magenta" Width="68" Content="0" Height="28" Canvas.Top="336" RenderTransformOrigin="0.794,2.242" Canvas.Left="172"/>
+                <Label Name="label_yellow" Width="68" Content="0" Height="28" Canvas.Top="362" RenderTransformOrigin="3.261,13.225" Canvas.Left="172"/>
+                <Label Name="label_key" Width="68" Content="0" Height="28" Canvas.Top="392" Canvas.Left="172" RenderTransformOrigin="1.588,3.535"/>
+            </StackPanel>
+            <StackPanel Grid.Row="5">
+                <Label Width="68" Content="Red" Height="28" Canvas.Left="231" Canvas.Top="306"/>
+                <Label Width="68" Content="Green" Height="28" Canvas.Left="231" Canvas.Top="334"/>
+                <Label Width="68" Content="Blue" Height="28" Canvas.Left="231" Canvas.Top="362"/>
+            </StackPanel>
+            <StackPanel Grid.Row="6">
+                <Slider x:Name="slider_red" Height="20" VerticalAlignment="Top" Width="100" Maximum="255" SmallChange="1" ValueChanged="slider_red_ValueChanged" IsSnapToTickEnabled="True" Canvas.Left="297" Canvas.Top="309" />
+                <Slider x:Name="slider_green" Height="20" VerticalAlignment="Top" Width="100" Maximum="255" SmallChange="1" ValueChanged="slider_green_ValueChanged" IsSnapToTickEnabled="True" Canvas.Left="297" Canvas.Top="337"/>
+                <Slider x:Name="slider_blue" Height="20" VerticalAlignment="Top" Width="100" Maximum="255" SmallChange="1" ValueChanged="slider_blue_ValueChanged" IsSnapToTickEnabled="True" Canvas.Left="297" Canvas.Top="365"/>
+            </StackPanel>
+            <StackPanel Grid.Row="7">
+                <Label x:Name="label_red" Width="68" Content="0" Height="28" Canvas.Left="402" Canvas.Top="306" RenderTransformOrigin="1.256,1.779"/>
+                <Label x:Name="label_green" Width="68" Content="0" RenderTransformOrigin="0.794,2.242" Height="28" Canvas.Left="402" Canvas.Top="334"/>
+                <Label x:Name="label_blue" Width="68" Content="0" RenderTransformOrigin="3.261,13.225" Height="28" Canvas.Left="402" Canvas.Top="362"/>
+            </StackPanel>
+            <StackPanel Grid.Row="8">
+                <Label Name="curr_color" Width="75" Height="75"/>
+                <Button x:Name="button_to_CMYK" Content="Convert to CMYK" Height="26" VerticalAlignment="Top" Width="163" Canvas.Left="240" Canvas.Top="390" Click="button_to_CMYK_Click"/>
+            </StackPanel>
+        </WrapPanel>
+        
     </Grid>
 </Window>
