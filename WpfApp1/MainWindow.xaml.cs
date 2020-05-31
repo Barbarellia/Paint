@@ -31,6 +31,12 @@ namespace WpfApp1
 
         private double OffsetX, OffsetY;
 
+        const int width = 240;
+        const int height = 240;
+        WriteableBitmap wbitmap = new WriteableBitmap(
+       width, height, 96, 96, PixelFormats.Bgra32, null);
+        byte[,,] pixels = new byte[height, width, 4];
+
         private double TrashWidth, TrashHeight;
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -283,7 +289,7 @@ namespace WpfApp1
             if (MovingStartEndPoint)
             {
                 SelectedLine.X1 = location.X + OffsetX;
-                SelectedLine.Y2 = location.Y + OffsetY;
+                SelectedLine.Y1 = location.Y + OffsetY;
             }
             else
             {
@@ -317,8 +323,8 @@ namespace WpfApp1
         private void Canvas_MouseUp_MovingSegment(object sender, MouseEventArgs e)
         {
             paintSurface.MouseMove += Canvas_MouseMove_NotDown;
-            paintSurface.MouseMove -= Canvas_MouseUp_MovingSegment;
-            paintSurface.MouseUp -= Canvas_MouseMove_MovingSegment;
+            paintSurface.MouseMove -= Canvas_MouseMove_MovingSegment;
+            paintSurface.MouseUp -= Canvas_MouseUp_MovingSegment;
 
             //paintSurface.Children.Add(SelectedLine);
 
@@ -340,14 +346,21 @@ namespace WpfApp1
 
                 if (e.LeftButton == MouseButtonState.Pressed)
                 {
-                    SolidColorBrush colorBrush = new SolidColorBrush();
-                    colorBrush.Color = selectedColor;
+                    int red = int.Parse(label_red.Content.ToString());
+                    int green = int.Parse(label_green.Content.ToString());
+                    int blue = int.Parse(label_blue.Content.ToString());
+                    SolidColorBrush colorBrush = new SolidColorBrush(Color.FromRgb((byte)red, (byte)green, (byte)blue));
+                    line.Stroke = colorBrush;
 
-                    if (selectedColor.ToString() != "#00000000")
-                    {
-                        line.Stroke = colorBrush;
-                    }
-                    else line.Stroke = SystemColors.WindowFrameBrush;
+                    //to dla color pickera
+                    //if (ColorPicker1.SelectedColor.HasValue)
+                    //    colorBrush.Color = selectedColor;
+                    //jesli wybrany jest jakis kolor to koloruj, nie to daj czarny
+                    //if (selectedColor.ToString() != "#00000000")
+                    //{
+                    //    line.Stroke = colorBrush;
+                    //}
+                    //else line.Stroke = SystemColors.WindowFrameBrush;
 
                     line.X1 = currPoint.X;
                     line.Y1 = currPoint.Y;
@@ -436,5 +449,113 @@ namespace WpfApp1
         {
             updatecmyk();
         }
+
+        public WriteableBitmap SaveAsWriteableBitmap(Canvas paintSurface)
+        {
+            if (paintSurface == null) return null;
+
+            // Save current canvas transform
+            Transform transform = paintSurface.LayoutTransform;
+            // reset current transform (in case it is scaled or rotated)
+            paintSurface.LayoutTransform = null;
+
+            // Get the size of canvas
+            Size size = new Size(paintSurface.ActualWidth, paintSurface.ActualHeight);
+            // Measure and arrange the surface
+            // VERY IMPORTANT
+            paintSurface.Measure(size);
+            paintSurface.Arrange(new Rect(size));
+
+            // Create a render bitmap and push the surface to it
+            RenderTargetBitmap renderBitmap = new RenderTargetBitmap(
+              (int)size.Width,
+              (int)size.Height,
+              96d,
+              96d,
+              PixelFormats.Pbgra32);
+            renderBitmap.Render(paintSurface);
+
+
+            //Restore previously saved layout
+            paintSurface.LayoutTransform = transform;
+
+            //create and return a new WriteableBitmap using the RenderTargetBitmap
+            return new WriteableBitmap(renderBitmap);
+        }
+
+        //private void Window_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //    const int width = Int32.Parse(paintSurface.Width);
+        //    const int height = 240;
+
+        //    WriteableBitmap wbitmap = SaveAsWriteableBitmap(paintSurface);
+        //        //new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgra32, null);
+        //    byte[,,] pixels = new byte[height, width, 4];
+
+        //    // Clear to black.
+        //    for (int row = 0; row < height; row++)
+        //    {
+        //        for (int col = 0; col < width; col++)
+        //        {
+        //            for (int i = 0; i < 3; i++)
+        //                pixels[row, col, i] = 0;
+        //            pixels[row, col, 3] = 255;
+        //        }
+        //    }
+
+        //    // Blue.
+        //    for (int row = 0; row < 80; row++)
+        //    {
+        //        for (int col = 0; col <= row; col++)
+        //        {
+        //            pixels[row, col, 0] = 255;
+        //        }
+        //    }
+
+        //    // Green.
+        //    for (int row = 80; row < 160; row++)
+        //    {
+        //        for (int col = 0; col < 80; col++)
+        //        {
+        //            pixels[row, col, 1] = 255;
+        //        }
+        //    }
+
+        //    // Red.
+        //    for (int row = 160; row < 240; row++)
+        //    {
+        //        for (int col = 0; col < 80; col++)
+        //        {
+        //            pixels[row, col, 2] = 255;
+        //        }
+        //    }
+
+        //    // Copy the data into a one-dimensional array.
+        //    byte[] pixels1d = new byte[height * width * 4];
+        //    int index = 0;
+        //    for (int row = 0; row < height; row++)
+        //    {
+        //        for (int col = 0; col < width; col++)
+        //        {
+        //            for (int i = 0; i < 4; i++)
+        //                pixels1d[index++] = pixels[row, col, i];
+        //        }
+        //    }
+
+        //    // Update writeable bitmap with the colorArray to the image.
+        //    Int32Rect rect = new Int32Rect(0, 0, width, height);
+        //    int stride = 4 * width;
+        //    wbitmap.WritePixels(rect, pixels1d, stride, 0);
+
+        //    // Create an Image to display the bitmap.
+        //    Image image = new Image();
+        //    image.Stretch = Stretch.None;
+        //    image.Margin = new Thickness(0);
+
+        //    grdMain.Children.Add(image);
+
+        //    //Set the Image source.
+        //    image.Source = wbitmap;
+        //}
     }
 }
